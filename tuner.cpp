@@ -36,50 +36,65 @@ int main( int argc, char* argv[] )
     
         while ( true )
         {
-            bytesRead = port.read( buf, 8 );
+        	unsigned char c = 0;
+        	
+            bytesRead = port.readFully( &c, 1 );
             
             if ( bytesRead == 1 )
             {
-                // response message
-                cout << "Response: " << (char)buf[0] << endl;
-            }
-            else if ( bytesRead == 8 )
-            {
-                // meter telemetry
-                unsigned short *p = (unsigned short*)buf;
-                unsigned short fwd = ntohs(*p++);  // fwd power
-                unsigned short ref = ntohs(*p++);  // ref power
-                unsigned short wtf = ntohs(*p++);  // don't know
-                unsigned short eom = ntohs(*p++);  // always 0x3b3b ";;"
-                
-                if ( eom == 0x3b3b ) 
-                {
-                	if ( fwd > 0 )
-                	{
-		                float wattsFwd = decodePwr(fwd);
-		                float wattsRef = decodePwr(ref);
-		                float rawRatio = sqrt( wattsRef / wattsFwd );
-		                float vswr     = (1.0 + rawRatio ) / (1.0 - rawRatio );
-		                
-		                cout << "Forward:   " << wattsFwd << " W" << endl;
-		                cout << "Reflected: " << wattsRef << " W" << endl;
-		                cout << "VSWR:      " << vswr << " : 1" << endl;
-                    }
-                }
-                else
-                {
-                    //cout << "unknown read from port: " << 
-                    //"fwd: " << std::hex << fwd << endl << 
-                    //"ref: " << ref << endl <<
-                    //"wtf: " << ref << endl <<
-                    //"eom: " << eom << endl;                    
-                }              
-            }
-            else
-            {
-                //cout << "bytes read == " << bytesRead << endl;
-            }
-        }
+            	if ( (int)c < 0x04 ) 
+            	{         	
+    	            buf[0] = c;
+	            	bytesRead = port.readFully( &buf[1], 7 );
+	            	            		
+           
+				    if ( bytesRead == 7 )
+				    {
+				        // meter telemetry
+				        unsigned short *p = (unsigned short*)buf;
+				        unsigned short fwd = ntohs(*p++);  // fwd power
+				        unsigned short ref = ntohs(*p++);  // ref power
+				        unsigned short wtf = ntohs(*p++);  // don't know
+				        unsigned short eom = ntohs(*p++);  // always 0x3b3b ";;"
+				        
+				        if ( eom == 0x3b3b ) 
+				        {
+				        	if ( fwd > 0 )
+				        	{
+						        float wattsFwd = decodePwr(fwd);
+						        float wattsRef = decodePwr(ref);
+						        float rawRatio = sqrt( wattsRef / wattsFwd );
+						        float vswr     = (1.0 + rawRatio ) / (1.0 - rawRatio );
+						        
+						        cout << "Forward:   " << wattsFwd << " W" << endl;
+						        cout << "Reflected: " << wattsRef << " W" << endl;
+						        cout << "VSWR:      " << abs(vswr) << " : 1" << endl << endl;
+				            }
+				        }
+				        else
+				        {
+				            cout << "unknown read from port: " << 
+				            "fwd: " << std::hex << fwd << endl << 
+				            "ref: " << ref << endl <<
+				            "wtf: " << ref << endl <<
+				            "eom: " << eom << endl;                    
+				        }              
+				    }
+				    else
+				    {
+				        cout << "bytes read == " << bytesRead << endl;
+				    }
+				}
+				else
+				{
+					cout << "Response: " << (char)c << endl;
+				}
+		    }
+		    else
+		    {
+		    	cout << "Read error" << endl;
+		    }
+        } // while (true)
     }
     else
     {

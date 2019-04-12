@@ -33,7 +33,7 @@ int SerialPort::init(const char* portname, int baud, int parity, int blocking)
     }
 
     m_fd = fd;
-    setAttributes(baud, parity);  // set speed to 115,200 bps, 8n1 (no parity)
+    setAttributes(baud, parity);  // set speed and parity
 
     setBlocking(blocking);        // set blocking
 
@@ -48,6 +48,27 @@ int SerialPort::read( void* buf, unsigned int nbytes )
 int SerialPort::write( const void* buf, unsigned int nbytes )
 {
     return ::write(m_fd, buf, nbytes );
+}
+
+int SerialPort::readFully( void* buf, unsigned int nbytes )
+{
+	int bytesRead = ::read( m_fd, buf, nbytes );
+	
+	while ( bytesRead != -1 && bytesRead < nbytes )
+	{
+		int result = ::read( m_fd, (unsigned char*)buf + bytesRead , nbytes - bytesRead );
+		
+		if ( result > 0 )
+		{
+			bytesRead += result;
+		}
+		else
+		{	
+			// error
+			bytesRead = -1;			
+		}			
+	}
+	return bytesRead;
 }
 
 int SerialPort::setAttributes (int speed, int parity)

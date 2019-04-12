@@ -13,6 +13,7 @@ class SerialPort
         
         int write( const void* buf, unsigned int nbytes );
         int read( void* buf, unsigned int nbytes );
+        int readFully( void* buf, unsigned int nbytes );
         
         //void close();
         
