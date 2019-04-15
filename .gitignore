@@ -31,4 +31,6 @@
 *.out
 *.app
 tunerctl
+ampctl
+tunermon
 
