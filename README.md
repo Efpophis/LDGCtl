@@ -16,7 +16,7 @@ S - places the tuner into "meter mode," which enables it to send the meter telem
 
 X - places the tuner back into "control mode," which turns off meter telemetry. 
 
-' ' - wake up the tuner before sending it any commands.
+[blank space] - wake up the tuner before sending it any commands.
 
 Placing the tuner in "control mode" prior to issuing a command makes it much easier to parse command responses that come back from the tuner.
 
