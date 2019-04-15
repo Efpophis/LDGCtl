@@ -8,6 +8,20 @@ The other thing you need is a 4 PIN mini-DIN connector. These are terribly hard 
 
 LDG published a document called "meter protocol" for the LDG M-1000, which, due to it seeming to suddenly want to vanish from online, I have included in my repository. Much of my information for this project came from there.
 
+## Undocumented Commands
+
+Besides the ones documented in the Meter Protocol document, I discovered 2 additional important commands:
+
+S - places the tuner into "meter mode," which enables it to send the meter telemetry described in the next section.
+
+X - places the tuner back into "control mode," which turns off meter telemetry. 
+
+' ' - wake up the tuner before sending it any commands.
+
+Placing the tuner in "control mode" prior to issuing a command makes it much easier to parse command responses that come back from the tuner.
+
+These commands don't have any responses, althought the "wake" command does cause a bunch of meter telemetry to be sent when in meter mode.
+
 ## Meter Telemetry
 
 The data that comes from the LDG Tuner as intended for the M-1000 meter follows a certain format that looks kind of like this:
@@ -22,3 +36,7 @@ The data that comes from the LDG Tuner as intended for the M-1000 meter follows 
 Note that all values come across in Network Byte Order, so if you're on a little-endian machine like me, you have to use htons() to convert them before doing any additional math.
 
 The forward and reflected power can be approximately converted to watts using the formula found in tuner.cpp. VSWR is then calculated based on the values of forward and reflected power.
+
+## Command Protocol
+
+To send any command and have the tuner parse it properly, I found that you need to send a wake command first, followed by a 1ms delay before sending the actual desired command. Additionally, if the tuner is in meter mode, it is a good idea to send a  "control mode" command first before sending the desired command.  Examples of this can be found in the source code.
