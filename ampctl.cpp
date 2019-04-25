@@ -8,8 +8,8 @@ using namespace std;
 
 int main( int argc, char* argv[] )
 {
-	const unsigned char off_cmd[] = { 0xff, 0x01, 0x00 };
-	const unsigned char on_cmd[]  = { 0xff, 0x01, 0x01 };
+	const unsigned char off_cmd[] = { 0xff, 0x01, 0x01 };
+	const unsigned char on_cmd[]  = { 0xff, 0x01, 0x00 };
 	
 	SerialPort port;
 	
