@@ -1,4 +1,4 @@
-# LDG AT-1000 ProII Control Program
+# LDG AT-1000 ProII Control Program (Linux CLI Version)
 
 This is my attempt to reverse-engineer the LDG AT-1000ProII Meter protocol in order to eventually implement software control AND meter reading. It's very much a work in progress, so no judging.
 
@@ -40,3 +40,8 @@ The forward and reflected power can be approximately converted to watts using th
 ## Command Protocol
 
 To send any command and have the tuner parse it properly, I found that you need to send a wake command first, followed by a 1ms delay before sending the actual desired command. Additionally, if the tuner is in meter mode, it is a good idea to send a  "control mode" command first before sending the desired command.  Examples of this can be found in the source code.
+
+## Windows Version
+
+I hacked together a Windows version in C# .Net. It's up here on Github somewhere and a lot more feature-complete than this. Serial port programming in .NET kinda sucks, tho.
+
